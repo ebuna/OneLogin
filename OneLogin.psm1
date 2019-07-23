@@ -5,7 +5,37 @@ $ErrorActionPreference = "Stop"
 Set-Variable -Name "baseURI" -Value "https://api.us.onelogin.com/api/1"
 
 
+<#
+    .SYNOPSIS
+        Generates an access token for use with the OneLogin API.
 
+    .DESCRIPTION
+        OneLogin uses OAuth2.0 for API authentication. This function uses the
+        Generate Tokens call to exchange a ClientID and ClientSecret for 
+        an access token that can be use to perform subsequent calls to the
+        API.
+
+    .PARAMETER ClientId
+        The Client ID from the OneLogin Developer API credential.
+
+    .PARAMETER ClientSecret
+        The Client Secret from the OneLogin Developer API credential.
+
+    .OUTPUTS
+        IF successful:
+            [string] $accessToken: The access token obtained.
+        ELSE:
+            $null. Will also display the error in the console.
+
+    .EXAMPLE
+        $token = GetAuthToken -ClientId "abcde12345" -ClientSecret "54321edcba"
+
+        Generates an access token and saves it to $token.
+
+    .LINK
+        https://developers.onelogin.com/api-docs/1/oauth20-tokens/generate-tokens-2
+
+#>
 Function GetAuthToken {
 
     [CmdletBinding()]
