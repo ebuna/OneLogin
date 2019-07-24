@@ -7,7 +7,7 @@ Set-Variable -Name "baseURI" -Value "https://api.us.onelogin.com/api/1"
 
 <#
     .SYNOPSIS
-        Generates an access token for use with the OneLogin API.
+        Generates and stores in memory an access token for use with the OneLogin API.
 
     .DESCRIPTION
         OneLogin uses OAuth2.0 for API authentication. This function uses the
@@ -23,20 +23,20 @@ Set-Variable -Name "baseURI" -Value "https://api.us.onelogin.com/api/1"
 
     .OUTPUTS
         IF successful:
-            [string] $accessToken: The access token obtained.
+            $true
         ELSE:
-            $null. Will also display the error in the console.
+            $false. Will also display the error in the console.
 
     .EXAMPLE
-        $token = GetAuthToken -ClientId "abcde12345" -ClientSecret "54321edcba"
+        New-OLAuthToken -ClientId "abcde12345" -ClientSecret "54321edcba"
 
-        Generates an access token and saves it to $token.
+        Generates a new access token and saves it in memory.
 
     .LINK
         https://developers.onelogin.com/api-docs/1/oauth20-tokens/generate-tokens-2
 
 #>
-Function GetAuthToken {
+Function New-OLAuthToken {
 
     [CmdletBinding()]
     Param (
@@ -91,7 +91,7 @@ Function GetAuthToken {
 
         # Something else happened
         Write-Host "An unknown exception occurred: $($_.Exception.Message)"
-        return $null
+        return $false
     }
 
     # Check the response status code
@@ -114,7 +114,13 @@ Function GetAuthToken {
     }
     else {
 
-        return $response.data.access_token
+        # Save token in memory
+        # Not converting to securestring yet due to pscore limitaions
+        # See here fore more info: https://github.com/PowerShell/PowerShell/issues/1654
+
+        New-Variable -Name "OLAPIToken" -Value $response.data -Visibility Private -Option ReadOnly -Scope Global
+
+        return $true
     }
 }
 
@@ -147,4 +153,4 @@ Function Convertto-Base64String {
     return [System.Convert]::ToBase64String($utfEncodedString)
 }
 
-Export-ModuleMember GetAuthToken
+Export-ModuleMember New-OLAuthToken
