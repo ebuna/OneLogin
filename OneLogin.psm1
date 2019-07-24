@@ -125,6 +125,71 @@ Function New-OLAuthToken {
 }
 
 
+
+Function Get-OLEvents {
+
+    [CmdletBinding()]
+    Param (
+
+        [Parameter(Mandatory = $false,
+        ValueFromPipelineByPropertyName,
+        ValueFromPipeline,
+        Position = 0)]
+        [String]
+        $EventID,
+
+        [Parameter(Mandatory = $false,
+        ValueFromPipelineByPropertyName,
+        ValueFromPipeline,
+        Position = 1)]
+        [int]
+        $Hours
+    )
+
+    # Check for existing access token and use or refresh it
+    if (ValidateToken) {
+
+        # Token is valid
+        Write-Host "Token is valid."
+    }
+    else {
+
+        # Token is not valid
+        Write-Host "token not valid"
+    }
+}
+
+
+Function ValidateToken {
+
+    # Check for existing access token and use or refresh it
+    if ($OLAPIToken) {
+
+        $now = Get-Date
+        $tokenExpiry = $OLAPIToken.created_at.AddSeconds($OLAPIToken.expires_in)
+
+        if ($now -ge $tokenExpiry) {
+
+            # TODO: Token is expired
+            # Should refresh the token using the Refresh Token call
+            Write-Verbose "Token is expired."
+            return $false
+        }
+        else {
+
+            # Token exists and is valid
+            return $true
+        }
+    }
+    else {
+
+        # Token does not exist
+        Write-Verbose "Token does not exist. Did you forget to authenticate with New-OLAuthToken?"
+        return $false
+    }
+}
+
+
 Function Convertto-Base64String {
 
     [CmdletBinding()]
@@ -153,4 +218,4 @@ Function Convertto-Base64String {
     return [System.Convert]::ToBase64String($utfEncodedString)
 }
 
-Export-ModuleMember New-OLAuthToken
+Export-ModuleMember New-OLAuthToken, Get-OLEvents
