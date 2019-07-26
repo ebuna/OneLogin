@@ -145,7 +145,14 @@ Function Get-OLEvents {
         ValueFromPipeline,
         Position = 1)]
         [int]
-        $Hours
+        $Hours,
+
+        [Parameter(Mandatory = $false,
+        ValueFromPipelineByPropertyName,
+        ValueFromPipeline,
+        Position = 1)]
+        [switch]
+        $All
     )
 
     # Check for existing access token and use or refresh it
@@ -192,7 +199,15 @@ Function Get-OLEvents {
             200 {
 
                 # Success
-                return $response.data
+                if ($All) {
+
+                    $allData = GetAllPaginationData -Headers $headers -Response $response
+                    return $allData
+                }
+                else {
+
+                    return $response.data
+                }
             }
 
             default {
