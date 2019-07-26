@@ -12,7 +12,7 @@
 RootModule = 'OneLogin.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.1'
+ModuleVersion = '0.1.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -24,16 +24,16 @@ GUID = 'dfacaa03-3326-44e3-82f1-5275855f32d5'
 Author = 'Elie Bunassar'
 
 # Company or vendor of this module
-CompanyName = 'Unknown'
+#CompanyName = 'Unknown'
 
 # Copyright statement for this module
 Copyright = '(c) Elie Bunassar. All rights reserved.'
 
 # Description of the functionality provided by this module
-# Description = ''
+Description = 'PowerShell module used to query the OneLogin API'
 
 # Minimum version of the PowerShell engine required by this module
-# PowerShellVersion = ''
+PowerShellVersion = '6.0'
 
 # Name of the PowerShell host required by this module
 # PowerShellHostName = ''
@@ -69,10 +69,10 @@ Copyright = '(c) Elie Bunassar. All rights reserved.'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = @('New-OLAuthToken','Get-OLEvents')
+FunctionsToExport = '*'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-CmdletsToExport = @()
+CmdletsToExport = '*'
 
 # Variables to export from this module
 VariablesToExport = '*'
