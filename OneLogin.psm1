@@ -5,6 +5,8 @@ $ErrorActionPreference = "Stop"
 Set-Variable -Name "baseURI" -Value "https://api.us.onelogin.com/api/1"
 
 
+#region Public Functions
+
 <#
     .SYNOPSIS
         Generates and stores in memory an access token for use with the OneLogin API.
@@ -209,8 +211,10 @@ Function Get-OLEvents {
 }
 
 
+#endregion
 
 
+#region Private Functions
 Function GetAllPaginationData {
 
 	[CmdletBinding()]
@@ -303,5 +307,7 @@ Function Convertto-Base64String {
     $utfEncodedString = [System.Text.Encoding]::UTF8.GetBytes($baseString)
     return [System.Convert]::ToBase64String($utfEncodedString)
 }
+#endregion
+
 
 Export-ModuleMember New-OLAuthToken, Get-OLEvents
