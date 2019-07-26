@@ -5,6 +5,8 @@ $ErrorActionPreference = "Stop"
 Set-Variable -Name "baseURI" -Value "https://api.us.onelogin.com/api/1"
 
 
+#region Public Functions
+
 <#
     .SYNOPSIS
         Generates and stores in memory an access token for use with the OneLogin API.
@@ -125,13 +127,49 @@ Function New-OLAuthToken {
 }
 
 
+<#
+    .SYNOPSIS
+        Returns events of the specified ID.
 
+    .DESCRIPTION
+        Generates an array of events of the provided ID. By default,
+        this function returns a maximum of 50 results. You can use the
+        -All switch to return all event found.
+
+    .PARAMETER EventID
+        Required. The ID of the event to return data for.
+
+    .PARAMETER Hours
+        Optional. Specify the number of hours to look back
+        from the current time.
+
+    .PARAMETER All
+        Optional. Set this switch to return all events that match
+        the criteria.
+
+    .OUTPUTS
+        ArrayList of objects.
+
+    .EXAMPLE
+        Get-OLEvents -EventID 113 -Hours 5
+
+        Returns a list of events for eventID 113 over the last 5 hours. A maximum of 50 events will be returned.
+
+    .EXAMPLE
+        Get-OLEvents -EventID 110 -Hours 48 -All
+
+        Returns a list of events for eventID 110 over the last 48 hours. There is no limit to the amount of events returned.
+
+    .LINK
+        https://developers.onelogin.com/api-docs/1/events/get-events
+
+#>
 Function Get-OLEvents {
 
     [CmdletBinding()]
     Param (
 
-        [Parameter(Mandatory = $false,
+        [Parameter(Mandatory = $true,
         ValueFromPipelineByPropertyName,
         ValueFromPipeline,
         Position = 0)]
@@ -143,7 +181,14 @@ Function Get-OLEvents {
         ValueFromPipeline,
         Position = 1)]
         [int]
-        $Hours
+        $Hours = 0,
+
+        [Parameter(Mandatory = $false,
+        ValueFromPipelineByPropertyName,
+        ValueFromPipeline,
+        Position = 1)]
+        [switch]
+        $All
     )
 
     # Check for existing access token and use or refresh it
@@ -190,7 +235,15 @@ Function Get-OLEvents {
             200 {
 
                 # Success
-                return $response.data
+                if ($All) {
+
+                    $allData = GetAllPaginationData -Headers $headers -Response $response
+                    return $allData
+                }
+                else {
+
+                    return $response.data
+                }
             }
 
             default {
@@ -206,6 +259,45 @@ Function Get-OLEvents {
         # Token is not valid
         Write-Verbose "token not valid"
     }
+}
+
+
+#endregion
+
+
+#region Private Functions
+Function GetAllPaginationData {
+
+	[CmdletBinding()]
+    Param (
+
+        [Parameter(Mandatory = $false,
+        ValueFromPipelineByPropertyName,
+        ValueFromPipeline,
+        Position = 0)]
+        [String]
+        $Headers,
+
+        [Parameter(Mandatory = $false,
+        ValueFromPipelineByPropertyName,
+        ValueFromPipeline,
+        Position = 1)]
+        [int]
+        $Response
+    )
+	
+	$tempData = $Response
+	$allData = $Response.data
+	
+	while ($tempData.pagination.next_link) {
+	
+		$tmpIRM = Invoke-RestMethod -URI $tempData.pagination.next_link -Method Get -Headers $Headers
+		
+		$allData += $tmpIRM.data
+		$tempData = $tmpIRM
+	}
+	
+	return $allData
 }
 
 
@@ -266,5 +358,7 @@ Function Convertto-Base64String {
     $utfEncodedString = [System.Text.Encoding]::UTF8.GetBytes($baseString)
     return [System.Convert]::ToBase64String($utfEncodedString)
 }
+#endregion
+
 
 Export-ModuleMember New-OLAuthToken, Get-OLEvents
