@@ -150,12 +150,61 @@ Function Get-OLEvents {
     if (ValidateToken) {
 
         # Token is valid
-        Write-Host "Token is valid."
+        Write-Verbose "Token is valid."
+
+        # Set start date for the API call
+        $startDate = (get-date).AddHours(-$Hours)
+        $startString = $startDate.ToString("o")
+
+        # URI
+	    $URI = "$baseURI/events?event_type_id=$EventID&since=$startString"
+	
+        # Headers
+        $headers = @{}
+        $headers.Add("Authorization","bearer:$($OLAPIToken.access_token)")
+
+        try {
+
+            $response = Invoke-RestMethod -URI $URI -Headers $headers -Method Get -SkipHeaderValidation
+        }
+        catch {
+
+            $response = $_.Exception.Response
+        }
+
+        # Check for errors
+        switch ($response.status.code) {
+
+            400 {
+
+                # Bad request
+                Write-Host "Received http 400 error.`nType: $($response.status.type).`nMessage:$($response.status.message)." -ForegroundColor Red
+                break
+            }
+
+            401 {
+
+                # TODO: Unauthorized
+            }
+
+            200 {
+
+                # Success
+                return $response.data
+            }
+
+            default {
+
+                Write-Host "An exception occurred: $($_.Exception.Message)" -ForegroundColor Red
+            }
+        }
+
+        return $response
     }
     else {
 
         # Token is not valid
-        Write-Host "token not valid"
+        Write-Verbose "token not valid"
     }
 }
 
@@ -187,7 +236,7 @@ Function ValidateToken {
         Write-Verbose "Token does not exist. Did you forget to authenticate with New-OLAuthToken?"
         return $false
     }
-}
+} 
 
 
 Function Convertto-Base64String {
