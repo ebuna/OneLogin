@@ -133,7 +133,7 @@ Function Get-OLEvents {
     [CmdletBinding()]
     Param (
 
-        [Parameter(Mandatory = $false,
+        [Parameter(Mandatory = $true,
         ValueFromPipelineByPropertyName,
         ValueFromPipeline,
         Position = 0)]
@@ -145,7 +145,7 @@ Function Get-OLEvents {
         ValueFromPipeline,
         Position = 1)]
         [int]
-        $Hours,
+        $Hours = 0,
 
         [Parameter(Mandatory = $false,
         ValueFromPipelineByPropertyName,
