@@ -127,7 +127,43 @@ Function New-OLAuthToken {
 }
 
 
+<#
+    .SYNOPSIS
+        Returns events of the specified ID.
 
+    .DESCRIPTION
+        Generates an array of events of the provided ID. By default,
+        this function returns a maximum of 50 results. You can use the
+        -All switch to return all event found.
+
+    .PARAMETER EventID
+        Required. The ID of the event to return data for.
+
+    .PARAMETER Hours
+        Optional. Specify the number of hours to look back
+        from the current time.
+
+    .PARAMETER All
+        Optional. Set this switch to return all events that match
+        the criteria.
+
+    .OUTPUTS
+        ArrayList of objects.
+
+    .EXAMPLE
+        Get-OLEvents -EventID 113 -Hours 5
+
+        Returns a list of events for eventID 113 over the last 5 hours. A maximum of 50 events will be returned.
+
+    .EXAMPLE
+        Get-OLEvents -EventID 110 -Hours 48 -All
+
+        Returns a list of events for eventID 110 over the last 48 hours. There is no limit to the amount of events returned.
+
+    .LINK
+        https://developers.onelogin.com/api-docs/1/events/get-events
+
+#>
 Function Get-OLEvents {
 
     [CmdletBinding()]
