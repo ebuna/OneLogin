@@ -111,7 +111,7 @@ Function New-OLAuthToken {
         # Not converting to securestring yet due to pscore limitaions
         # See here fore more info: https://github.com/PowerShell/PowerShell/issues/1654
 
-        New-Variable -Name "OLAPIToken" -Value $response.data -Scope Script
+        Set-Variable -Name "OLAPIToken" -Value $response.data -Scope Script
 
         return $true
     }

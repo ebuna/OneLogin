@@ -15,6 +15,7 @@ foreach ($import in @($Public + $Private)) {
     }
 }
 
-
+# Private variables
+Set-Variable -Name "baseURI" -Value "https://api.us.onelogin.com/api/1" -Scope Script
 
 Export-ModuleMember -Function $Public.Basename
